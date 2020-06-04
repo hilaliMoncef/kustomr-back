@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'rest_framework',
     'corsheaders',
-    'Users'
+    'Users',
+    'Customer',
+    'Medias',
+    'Vendor',
 ]
 
 SITE_ID = 1
@@ -62,9 +65,7 @@ SIMPLE_JWT = {
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:8080",
-    "http://localhost:8081",
-    "https://neoresid-front.herokuapp.com",
-    "https://neoresid-admin.herokuapp.com"
+    "http://localhost:8081"
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
