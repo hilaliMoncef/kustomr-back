@@ -14,19 +14,24 @@ class CustomerToken(models.Model):
 
 
 class Customer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="customers")
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    birthday = models.DateField()
     token = models.OneToOneField(CustomerToken, on_delete=models.CASCADE, related_name="customer", default=None, blank=True, null=True)
-    imported = models.BooleanField(default=False)
-    store_linked = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="customers")
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="customers")
     points = models.IntegerField(default=0)
+    imported = models.BooleanField(default=False)
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return 'Customer : {}'.format(self.user)
+        return '{} : {}'.format(self.vendor.store_name, self.first_name + ' ' + self.last_name)
 
     @property
     def next_gift(self):
-        discounts = list(self.store_linked.discounts.filter(is_active=True, end_date__gte=timezone.now(), min_points__gt=self.points).values_list('min_points', flat=True))
-        offers = list(self.store_linked.offers.filter(is_active=True, end_date__gte=timezone.now(), cost__gt=self.points).values_list('cost', flat=True))
+        discounts = list(self.vendor.discounts.filter(is_active=True, end_date__gte=timezone.now(), min_points__gt=self.points).values_list('min_points', flat=True))
+        offers = list(self.vendor.offers.filter(is_active=True, end_date__gte=timezone.now(), cost__gt=self.points).values_list('cost', flat=True))
         all_points = discounts + offers or [0]
         return min(all_points) - self.points
 
