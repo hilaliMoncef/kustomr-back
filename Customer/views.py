@@ -25,8 +25,6 @@ class LandingPageView(APIView):
     def get(self, request, *args, **kwargs):
         vendor = get_object_or_404(Vendor, pk=self.kwargs['pk'])
         if request.user.is_authenticated:
-            if request.user.is_customer:
-                return Response({'vendor': vendor.pk, 'store_name': slugify(vendor.store_name), 'token': request.user.get_customer(store=vendor.pk).token.token}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'message': 'Vous êtes déjà connecté ailleurs.'}, status=status.HTTP_403_FORBIDDEN)
         else:
             return Response(VendorFullSerializer(vendor).data, status=status.HTTP_200_OK)
