@@ -64,6 +64,8 @@ SIMPLE_JWT = {
 }
 
 CORS_ORIGIN_WHITELIST = [
+    "https://app.kustomr.fr",
+    "https://app.kustomr.io",
     "http://localhost:8080",
     "http://localhost:8081"
 ]
