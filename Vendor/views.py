@@ -28,10 +28,10 @@ class ListCreateCustomers(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_superuser:
-            return Customer.objects.order_by('-date_added')
+            return Customer.objects.order_by('-pk')
         else:
             if user.is_vendor:
                 # Vendor get only his customers
-                return Customer.objects.filter(vendor=user.vendor).order_by('-date_added')
+                return Customer.objects.filter(vendor=user.vendor).order_by('-pk')
             else:
                 return Customer.objects.none()

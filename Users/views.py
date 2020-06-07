@@ -5,6 +5,7 @@ from rest_framework import authentication, permissions
 from rest_framework import status
 from rest_framework import generics
 from .serializers import UserSerializer
+from Vendor.serializers import VendorSerializer
 
 
 class CurrentUser(APIView):
@@ -14,6 +15,10 @@ class CurrentUser(APIView):
 
     def get(self, request, format=None):
         if request.user.is_authenticated:
-            return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
+            response = {}
+            response['user'] = UserSerializer(request.user).data
+            if request.user.is_vendor:
+                response['vendor'] = VendorSerializer(request.user.vendor).data
+            return Response(response, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Aucun utilisateur connecté.'}, status=status.HTTP_403_FORBIDDEN)
