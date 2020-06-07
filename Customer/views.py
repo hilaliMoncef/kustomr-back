@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from rest_framework import status
 from rest_framework import generics
-from .serializers import CustomerSerializer
+from .serializers import CustomerSerializer, TransactionSerializer
 from Vendor.serializers import VendorFullSerializer, ArticlesSerializer
 
 
@@ -80,3 +80,11 @@ class DashboardView(APIView):
             'articles': ArticlesSerializer(articles, many=True).data
         }
         return Response(context, status=status.HTTP_200_OK)
+
+
+
+class CustomerTransactionList(generics.ListAPIView):
+    def get(self, request, *args, **kwargs):
+        customer = get_object_or_404(Customer, pk=self.kwargs['pk'])
+        data = TransactionSerializer(customer.transactions, many=True).data
+        return Response(data, status=status.HTTP_200_OK)

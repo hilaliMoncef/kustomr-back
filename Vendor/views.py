@@ -4,8 +4,8 @@ from rest_framework import authentication, permissions
 from rest_framework import status
 from rest_framework import generics
 from .serializers import VendorSerializer
-from Customer.models import Customer
-from Customer.serializers import CustomerSerializer
+from Customer.models import Customer, CustomersList
+from Customer.serializers import CustomerSerializer, CustomerListSerializer
 
 
 class CurrentVendor(APIView):
@@ -35,3 +35,20 @@ class ListCreateCustomers(generics.ListCreateAPIView):
                 return Customer.objects.filter(vendor=user.vendor).order_by('-pk')
             else:
                 return Customer.objects.none()
+
+
+class ListCreateCustomersList(generics.ListCreateAPIView):
+    queryset = CustomersList.objects.all()
+    serializer_class = CustomerListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return CustomersList.objects.order_by('-last_update')
+        else:
+            if user.is_vendor:
+                # Vendor get only his customers
+                return CustomersList.objects.filter(vendor=user.vendor).order_by('-last_update')
+            else:
+                return CustomersList.objects.none()
