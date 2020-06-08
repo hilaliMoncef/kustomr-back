@@ -7,5 +7,10 @@ class VendorMedia(models.Model):
 
 
 class ArticleMedia(models.Model):
-    file = models.FileField(upload_to="vendors/")
+    file = models.FileField(upload_to="articles/")
+    date_added = models.DateTimeField(auto_now_add=True)
+
+
+class DiscountMedia(models.Model):
+    file = models.FileField(upload_to="discounts/")
     date_added = models.DateTimeField(auto_now_add=True)
