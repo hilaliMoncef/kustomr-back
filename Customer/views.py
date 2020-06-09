@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.sites.shortcuts import get_current_site
 from Vendor.models import Vendor
-from .models import Customer, CustomerToken
+from .models import Customer, CustomerToken, Transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
@@ -88,3 +88,50 @@ class CustomerTransactionList(generics.ListAPIView):
         customer = get_object_or_404(Customer, pk=self.kwargs['pk'])
         data = TransactionSerializer(customer.transactions, many=True).data
         return Response(data, status=status.HTTP_200_OK)
+
+
+class ListCreateTransactions(generics.ListCreateAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Transaction.objects.order_by('-date')
+        else:
+            if user.is_vendor:
+                # Vendor get only his customers
+                return Transaction.objects.filter(vendor=user.vendor).order_by('-date')
+            else:
+                return Transaction.objects.none()
+
+
+class RefundTransaction(APIView):
+    def get(self, request, *args, **kwargs):
+        transaction = get_object_or_404(Transaction, pk=self.kwargs['pk'])
+        transaction.refunded = True
+        transaction.date_refund = timezone.now()
+        transaction.save()
+
+        transaction.customer.points -= transaction.amount_discounted
+        transaction.customer.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+
+class RetrieveUpdateDestroyCustomer(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Customer.objects.order_by('-date')
+        else:
+            if user.is_vendor:
+                # Vendor get only his customers
+                return Customer.objects.filter(vendor=user.vendor).order_by('-date')
+            else:
+                return Customer.objects.none()

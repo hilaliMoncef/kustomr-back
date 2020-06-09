@@ -4,6 +4,7 @@ from Vendor.models import Vendor
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from Discount.models import PointsDiscount, PercentDiscount, AmountDiscount
 
 
 class CustomerToken(models.Model):
@@ -57,16 +58,22 @@ class CustomersList(models.Model):
 
 
 class Transaction(models.Model):
-    TRANSACTION_TYPES = [
-        ('A', 'Achat'),
-        ('R', 'Remboursement')
-    ]
-
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="transactions")
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="transactions")
-    category = models.CharField(max_length=1, choices=TRANSACTION_TYPES, default='A')
-    amount = models.IntegerField()
+    amount = models.FloatField()
+    amount_discounted = models.FloatField()
+    point_discount = models.ForeignKey(PointsDiscount, on_delete=models.SET_NULL, related_name="transactions", null=True, blank=True, default=None)
+    amount_discount = models.ForeignKey(AmountDiscount, on_delete=models.SET_NULL, related_name="transactions", null=True, blank=True, default=None)
+    percent_discount = models.ForeignKey(PercentDiscount, on_delete=models.SET_NULL, related_name="transactions", null=True, blank=True, default=None)
+    refunded = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
+    date_refund = models.DateTimeField(default=None, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.customer.points += self.amount_discounted
+        super(Transaction, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return '{} pour {} chez {} le {}'.format(self.category, self.customer.user, self.vendor.store_name, self.date)

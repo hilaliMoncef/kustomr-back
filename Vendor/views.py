@@ -4,7 +4,7 @@ from rest_framework import authentication, permissions
 from rest_framework import status
 from rest_framework import generics
 from .serializers import VendorSerializer
-from Customer.models import Customer, CustomersList
+from Customer.models import Customer, CustomersList, Transaction
 from Customer.serializers import CustomerSerializer, CustomerListSerializer
 
 

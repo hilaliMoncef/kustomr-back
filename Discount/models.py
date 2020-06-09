@@ -22,19 +22,19 @@ class PointsDiscount(models.Model):
     type_amount = models.CharField(max_length=1, choices=AMOUNT_TYPE_CHOICES)
     amount = models.FloatField()
     description = models.TextField()
-    start_date = models.DateTimeField(default=None, null=True, blank=True)
-    end_date = models.DateTimeField(default=None, null=True, blank=True)
+    start_date = models.DateField(default=None, null=True, blank=True)
+    end_date = models.DateField(default=None, null=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'Réduction Points de Fidélité "{}" - {}'.format(self.name, self.status_text)
+        return 'Réduction Points de Fidélité "{}" - {}'.format(self.name, self.status)
 
     @property
     def status(self):
         if self.is_active:
-            if timezone.now() >= self.start_date and timezone.now() <= self.end_date:
+            if timezone.now().date() >= self.start_date and timezone.now().date() <= self.end_date:
                 return 0
-            elif timezone.now() < self.start_date:
+            elif timezone.now().date() < self.start_date:
                 return 1
             else:
                 return -1
@@ -60,19 +60,19 @@ class AmountDiscount(models.Model):
     type_amount = models.CharField(max_length=1, choices=AMOUNT_TYPE_CHOICES)
     amount = models.FloatField()
     description = models.TextField()
-    start_date = models.DateTimeField(default=None, null=True, blank=True)
-    end_date = models.DateTimeField(default=None, null=True, blank=True)
+    start_date = models.DateField(default=None, null=True, blank=True)
+    end_date = models.DateField(default=None, null=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'Réduction Montant Fixe "{}" - {}'.format(self.name, self.status_text)
+        return 'Réduction Montant Fixe "{}" - {}'.format(self.name, self.status)
 
     @property
     def status(self):
         if self.is_active:
-            if timezone.now() >= self.start_date and timezone.now() <= self.end_date:
+            if timezone.now().date() >= self.start_date and timezone.now().date() <= self.end_date:
                 return 0 # Actif
-            elif timezone.now() < self.start_date:
+            elif timezone.now().date() < self.start_date:
                 return 1 # A venir
             else:
                 return -1 # Expiré
@@ -91,19 +91,19 @@ class PercentDiscount(models.Model):
     code = models.CharField(max_length=40)
     amount = models.FloatField()
     description = models.TextField()
-    start_date = models.DateTimeField(default=None, null=True, blank=True)
-    end_date = models.DateTimeField(default=None, null=True, blank=True)
+    start_date = models.DateField(default=None, null=True, blank=True)
+    end_date = models.DateField(default=None, null=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'Réduction Pourcentage "{}" - {}'.format(self.name, self.status_text)
+        return 'Réduction Pourcentage "{}" - {}'.format(self.name, self.status)
 
     @property
     def status(self):
         if self.is_active:
-            if timezone.now() >= self.start_date and timezone.now() <= self.end_date:
+            if timezone.now().date() >= self.start_date and timezone.now().date() <= self.end_date:
                 return 0 # Actif
-            elif timezone.now() < self.start_date:
+            elif timezone.now().date() < self.start_date:
                 return 1 # A venir
             else:
                 return -1 # Expiré

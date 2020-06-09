@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import AmountDiscount, PercentDiscount, PointsDiscount
 
-# Register your models here.
+
+admin.site.register(AmountDiscount)
+admin.site.register(PercentDiscount)
+admin.site.register(PointsDiscount)
