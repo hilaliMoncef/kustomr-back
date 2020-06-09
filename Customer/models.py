@@ -72,6 +72,7 @@ class Transaction(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is None:
             self.customer.points += self.amount_discounted
+            self.customer.save()
         super(Transaction, self).save(*args, **kwargs)
 
 
