@@ -116,7 +116,7 @@ class RefundTransaction(APIView):
 
         transaction.customer.points -= transaction.amount_discounted
         transaction.customer.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(TransactionSerializer(transaction, many=False).data, status=status.HTTP_200_OK)
 
 
 
