@@ -77,4 +77,4 @@ class Transaction(models.Model):
 
 
     def __str__(self):
-        return '{} pour {} chez {} le {}'.format(self.category, self.customer.user, self.vendor.store_name, self.date)
+        return '{}{} chez {} le {}'.format('Remboursé - ' if self.refunded else '', self.customer.user, self.vendor.store_name, self.date)
