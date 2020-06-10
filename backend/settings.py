@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'Customer',
     'Medias',
     'Vendor',
+    'Training',
     'Discount'
 ]
 

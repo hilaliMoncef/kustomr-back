@@ -39,6 +39,10 @@ class Customer(models.Model):
         return min(all_points) - self.points
 
     @property
+    def name(self):
+        return '{} {}'.format(self.first_name.capitalize(), self.last_name.capitalize())
+
+    @property
     def visit_freq(self):
         if self.transactions.count() <= 0:
             return 0

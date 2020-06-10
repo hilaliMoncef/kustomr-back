@@ -14,3 +14,8 @@ class ArticleMedia(models.Model):
 class DiscountMedia(models.Model):
     file = models.FileField(upload_to="discounts/")
     date_added = models.DateTimeField(auto_now_add=True)
+
+
+class TrainingMedia(models.Model):
+    file = models.FileField(upload_to="trainings/")
+    date_added = models.DateTimeField(auto_now_add=True)
