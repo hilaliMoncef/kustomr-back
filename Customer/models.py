@@ -4,7 +4,9 @@ from Vendor.models import Vendor
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.db.models import Sum, Avg
 from Discount.models import PointsDiscount, PercentDiscount, AmountDiscount
+import pandas as pd
 
 
 class CustomerToken(models.Model):
@@ -35,6 +37,38 @@ class Customer(models.Model):
         offers = list(self.vendor.offers.filter(is_active=True, end_date__gte=timezone.now(), cost__gt=self.points).values_list('cost', flat=True))
         all_points = discounts + offers or [0]
         return min(all_points) - self.points
+
+    @property
+    def visit_freq(self):
+        if self.transactions.count() <= 0:
+            return 0
+        else:
+            dates = self.transactions.filter(refunded=False).values_list('date', flat=True)
+            df = pd.DataFrame(dates, columns=['Date'])
+            pd.to_datetime(df['Date'])
+            stat = df.groupby([df['Date'].dt.year, df['Date'].dt.month]).agg('count')
+            return stat['Date'].mean()
+
+    @property
+    def last_visit(self):
+        if self.transactions.count() <= 0:
+            return None
+        else:
+            return self.transactions.filter(refunded=False).order_by('-date').first().date
+
+    @property
+    def total_expenses(self):
+        if self.transactions.count() <= 0:
+            return 0
+        else:
+            return self.transactions.filter(refunded=False).aggregate(Sum('amount'))['amount__sum']
+    
+    @property
+    def avg_expenses(self):
+        if self.transactions.count() <= 0:
+            return 0
+        else:
+            return self.transactions.filter(refunded=False).aggregate(Avg('amount'))['amount__avg']
 
 
 @receiver(post_save, sender=Customer)

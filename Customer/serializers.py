@@ -4,12 +4,21 @@ from Vendor.serializers import VendorSerializer
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    visit_freq = serializers.ReadOnlyField()
+    last_visit = serializers.ReadOnlyField()
+    total_expenses = serializers.ReadOnlyField()
+    avg_expenses = serializers.ReadOnlyField()
+
     class Meta:
         model = Customer
         fields = '__all__'
 
 class CustomerFullSerializer(serializers.ModelSerializer):
     vendor = VendorSerializer(many=False, read_only=True)
+    visit_freq = serializers.ReadOnlyField()
+    last_visit = serializers.ReadOnlyField()
+    total_expenses = serializers.ReadOnlyField()
+    avg_expenses = serializers.ReadOnlyField()
     
     class Meta:
         model = Customer
