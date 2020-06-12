@@ -4,6 +4,15 @@ from Medias.serializers import ArticleMediaSerializer, VendorMediaSerializer
 
 
 class RewardCardLayoutSerializer(serializers.ModelSerializer):
+    icon = VendorMediaSerializer(many=False, read_only=True)
+    logo = VendorMediaSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = RewardCardLayout
+        fields = '__all__'
+
+
+class RewardCardLayoutLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = RewardCardLayout
         fields = '__all__'

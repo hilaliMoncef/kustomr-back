@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from rest_framework import status
 from rest_framework import generics
-from .serializers import VendorSerializer
+from .models import Vendor, RewardCardLayout, VendorOpeningHours
+from .serializers import VendorSerializer, RewardCardLayoutSerializer, RewardCardLayoutLightSerializer, VendorOpeningHoursSerializer
 from Customer.models import Customer, CustomersList, Transaction
 from Customer.serializers import CustomerSerializer, CustomerListSerializer
 
@@ -18,6 +19,24 @@ class CurrentVendor(APIView):
             return Response(VendorSerializer(request.user.vendor).data, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Aucun utilisateur connecté.'}, status=status.HTTP_403_FORBIDDEN)
+
+
+class UpdateVendor(generics.UpdateAPIView):
+    queryset = Vendor.objects.all()
+    serializer_class = VendorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class UpdateHourVendor(generics.UpdateAPIView):
+    queryset = VendorOpeningHours.objects.all()
+    serializer_class = VendorOpeningHoursSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class UpdateLayoutVendor(generics.UpdateAPIView):
+    queryset = RewardCardLayout.objects.all()
+    serializer_class = RewardCardLayoutLightSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ListCreateCustomers(generics.ListCreateAPIView):
