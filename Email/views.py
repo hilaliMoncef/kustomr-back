@@ -3,12 +3,20 @@ from rest_framework import authentication, permissions
 from rest_framework import status
 from rest_framework import generics
 from rest_framework.views import APIView
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
+from django.contrib.sites.shortcuts import get_current_site
+from Customer.models import CustomersList, Customer
+from Medias.models import EmailMedia
 from .models import EmailCampaign
+from .forms import EmailCampaignForm
 from .serializers import EmailCampaignSerializer
 from mailjet_rest import Client
 from django.utils.text import slugify
 from django.utils.html import strip_tags
+import random
 import os
+import json
 
 
 class ListCreateEmailCampaigns(generics.ListAPIView):
@@ -28,53 +36,107 @@ class ListCreateEmailCampaigns(generics.ListAPIView):
                 return EmailCampaign.objects.none()
 
 
-class StatisticsEmailCampaign(APIView):
-    def get(self, request, *args, **kwargs):
+class StatisticsByEmailCampaign(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        campaign = get_object_or_404(EmailCampaign, pk=pk)
+
         api_key = '46a124dc7da2c21caf65a7fef536400c'
         api_secret = '0e37a3531511a7936b557dc02b757fe5'
         mailjet = Client(auth=(api_key, api_secret), version='v3')
         
+        if not campaign.mailjet_id:
+            result = mailjet.campaign.get(id=campaign.mailjet_custom_campaign)
+            data = result.json()
+            campaign.mailjet_id = data["Data"][0]["ID"]
+            campaign.save()
+        
         filters = {
-            'IDType': 'Campaign',
-            'ID': 7655003244
+            "ID": campaign.mailjet_id,
+            "IDType": "Campaign"
         }
         result = mailjet.campaignoverview.get(filters=filters)
-        print(result.status_code)
-        print(result.json())
-        return Response(status=status.HTTP_200_OK)
+        data = result.json()["Data"][0]
+        
+        context = {
+            'campaign': EmailCampaignSerializer(campaign).data,
+            'stats': {
+                "delivered": data["DeliveredCount"] / campaign.to.count(),
+                "opened": data["OpenedCount"] / campaign.to.count(),
+                "clicked": data["ClickedCount"] / campaign.to.count(),
+            }
+        }
+        return Response(context, status=status.HTTP_200_OK)
 
 
 class AddEmailCampaign(APIView):
     def post(self, request, *args, **kwargs):
         vendor = request.user.vendor
-        api_key = '46a124dc7da2c21caf65a7fef536400c'
-        api_secret = '0e37a3531511a7936b557dc02b757fe5'
-        mailjet = Client(auth=(api_key, api_secret), version='v3.1')
-        data = {
-            'Messages': [
-                {
-                    "From": {
-                        "Email": "{}@kustomr.fr".format(slugify(vendor.store_name)),
-                        "Name": vendor.store_name
-                    },
-                    "To": [
-                        {
-                            "Email": "hilali.moncef@gmail.com",
-                            "Name": "Moncef"
-                        }
-                    ],
-                    "Subject": request.data['subject'],
-                    "TextPart": strip_tags(request.data['content']),
-                    "HTMLPart": request.data['content'],
-                    "CustomCampaign": request.data['name'],
-                    "DeduplicateCampaign": True
-                }
-            ]
-        }
-        result = mailjet.send.create(data=data)
-        print(result.status_code)
-        print(result.json())
-        return Response(status=status.HTTP_200_OK)
+
+        form = EmailCampaignForm(request.data)
+
+        if form.is_valid():
+            campaign = form.save(commit=False)
+
+            if not request.data['isScheduled']:
+                # If campaign is immediate, we sent it right away
+
+                api_key = '46a124dc7da2c21caf65a7fef536400c'
+                api_secret = '0e37a3531511a7936b557dc02b757fe5'
+                mailjet = Client(auth=(api_key, api_secret), version='v3.1')
+                
+                # Getting the used Media
+                if request.data['media']:
+                    media = get_object_or_404(EmailMedia, pk=request.data['media'])
+                else:
+                    media = None
+
+                # Building To dict
+                to = []
+                customers = Customer.objects.filter(pk__in=request.data['to'])
+                
+                # Rendering templates
+                data = {}
+                campaign_id = '{}-{}-{}'.format(vendor.pk, slugify(request.data['title']), random.randint(0, 100000))
+                data['Messages'] = []
+                for customer in customers:
+                    template = render_to_string('emails/information_mail.html', {
+                        'customer': customer,
+                        'media': media,
+                        'content': request.data['content'],
+                        'domain': 'app.kustomr.fr/',
+                        'vendor': vendor
+                    })
+
+                    message = {
+                        "From": {
+                            "Email": "{}@kustomr.fr".format(slugify(vendor.store_name)),
+                            "Name": vendor.store_name
+                        },
+                        "To": [{"Email": customer.email, "Name": customer.name}],
+                        "Subject": request.data['subject'],
+                        "TextPart": strip_tags(request.data['content']),
+                        "HTMLPart": template,
+                        "CustomCampaign": campaign_id,
+                        "DeduplicateCampaign": True
+                    }
+                    
+                    data['Messages'].append(message)
+
+                result = mailjet.send.create(data=data)
+                
+                if result.status_code == 200:
+                    campaign.mailjet_custom_campaign = campaign_id
+                    campaign.sent = True
+                    campaign.save()
+                    return Response({'message': 'Votre campagne a bien été envoyée.'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'message': 'Une erreur s\'est produite lors de la programmation.'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                # The campaign is scheduled, Celery should take care of it.
+                return Response({'message': 'Votre campagne a bien été programmée, elle sera envoyée à la date précisée.'}, status=status.HTTP_200_OK)
+        else:
+            print(form.errors)
+            return Response({'message': 'Une erreur s\'est produite lors de la validation du formulaire.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RetrieveUpdateDestroyEmailCampaigns(generics.RetrieveUpdateDestroyAPIView):

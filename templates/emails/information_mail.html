@@ -144,7 +144,7 @@
                         style="padding-right: 0px;padding-left: 0px;">
                         <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><img
                           align="center" alt="{{ vendor.store_name }}" border="0" class="center fixedwidth"
-                          src="https://{{ domain }}{{ vendor.reward_card_layout.logo.url }}"
+                          src="{{ vendor.reward_card_layout.logo.file }}"
                           style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 100%; max-width: 125px; display: block;"
                           title="{{ vendor.store_name }}" width="125" />
                         <!--[if mso]></td></tr></table><![endif]-->
@@ -176,7 +176,7 @@
                         style="padding-right: 0px;padding-left: 0px;">
                         <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><img
                           align="center" alt="{{ vendor.store_name }}" border="0" class="center fixedwidth"
-                          src="https://{{ domain }}{{ media.file.url }}"
+                          src="{{ media.file }}"
                           style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 100%; max-width: 450px; display: block;"
                           title="{{ vendor.store_name }}" width="450" />
                         <!--[if mso]></td></tr></table><![endif]-->
@@ -223,7 +223,7 @@
                             Retrouvez votre espace client en cliquant sur le bouton suivant
                           </p>
                           <p style="font-size: 14px; line-height: 1.5; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; word-break: break-word; mso-line-height-alt: 21px; margin: 0;"><a
-                              href="https://{{ domain }}{% url 'customer_home' vendor=vendor.pk store_name=vendor.store_name|slugify token=customer.token.token %}"
+                              href="https://app.kustomr.fr/{{ vendor.pk }}-{{ vendor.store_name|slugify }}/{{ customer.token.token}}"
                               target="_blank"
                               style="display: inline-block; color: {{ vendor.reward_card_layout.text_color }}; background-color: {{ vendor.reward_card_layout.bg_color }}; border: solid 1px {{ vendor.reward_card_layout.bg_color }}; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: {{ vendor.reward_card_layout.bg_color }};">Accéder à mon espace client</a>.
                           </p>

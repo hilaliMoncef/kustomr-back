@@ -5,9 +5,9 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
-from .forms import ArticleMediaUploadForm, VendorMediaUploadForm, DiscountMediaUploadForm
-from .models import ArticleMedia, VendorMedia, DiscountMedia
-from .serializers import VendorMediaSerializer, DiscountMediaSerializer, ArticleMediaSerializer
+from .forms import ArticleMediaUploadForm, VendorMediaUploadForm, DiscountMediaUploadForm, TrainingMediaUploadForm, EmailMediaUploadForm
+from .models import ArticleMedia, VendorMedia, DiscountMedia, TrainingMedia, EmailMedia
+from .serializers import VendorMediaSerializer, DiscountMediaSerializer, ArticleMediaSerializer, TrainingMediaSerializer, EmailMediaSerializer
 
 
 
@@ -48,6 +48,34 @@ class VendorUploadView(APIView):
             if form.is_valid():
                 image = form.save()
                 return Response(VendorMediaSerializer(image).data, status=status.HTTP_201_CREATED)
+            else:
+                print(form.errors)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class TrainingUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    def post(self, request, format=None):
+        if request.FILES['file']:
+            form = TrainingMediaUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                image = form.save()
+                return Response(TrainingMediaSerializer(image).data, status=status.HTTP_201_CREATED)
+            else:
+                print(form.errors)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmailUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    def post(self, request, format=None):
+        if request.FILES['file']:
+            form = EmailMediaUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                image = form.save()
+                return Response(EmailMediaSerializer(image).data, status=status.HTTP_201_CREATED)
             else:
                 print(form.errors)
                 return Response(status=status.HTTP_400_BAD_REQUEST)

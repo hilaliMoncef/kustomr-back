@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ArticleMedia, VendorMedia, DiscountMedia, TrainingMedia
+from .models import ArticleMedia, VendorMedia, DiscountMedia, TrainingMedia, EmailMedia
 
 
 class VendorMediaSerializer(serializers.ModelSerializer):
@@ -22,5 +22,11 @@ class DiscountMediaSerializer(serializers.ModelSerializer):
 
 class TrainingMediaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DiscountMedia
+        model = TrainingMedia
+        fields = '__all__'
+
+
+class EmailMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailMedia
         fields = '__all__'
