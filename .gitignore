@@ -5,6 +5,9 @@
 .AppleDouble
 .LSOverride
 
+# Celery
+celerybeat-schedule
+
 # Icon must end with two \r
 Icon
 

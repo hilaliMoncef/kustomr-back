@@ -76,12 +76,13 @@ class AddEmailCampaign(APIView):
 
         if form.is_valid():
             campaign = form.save(commit=False)
+            campaign.to.add(*request.data['to'])
 
             if not request.data['isScheduled']:
                 # If campaign is immediate, we sent it right away
 
-                api_key = '46a124dc7da2c21caf65a7fef536400c'
-                api_secret = '0e37a3531511a7936b557dc02b757fe5'
+                api_key = settings.MJ_APIKEY_PUBLIC
+                api_secret = settings.MJ_APIKEY_PRIVATE
                 mailjet = Client(auth=(api_key, api_secret), version='v3.1')
                 
                 # Getting the used Media
@@ -133,6 +134,7 @@ class AddEmailCampaign(APIView):
                     return Response({'message': 'Une erreur s\'est produite lors de la programmation.'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 # The campaign is scheduled, Celery should take care of it.
+                campaign.save()
                 return Response({'message': 'Votre campagne a bien été programmée, elle sera envoyée à la date précisée.'}, status=status.HTTP_200_OK)
         else:
             print(form.errors)

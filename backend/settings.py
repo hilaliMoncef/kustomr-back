@@ -122,6 +122,15 @@ DATABASES = {
 AUTH_USER_MODEL = 'Users.User'
 
 
+# CELERY STUFF
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Paris'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -156,11 +165,9 @@ USE_TZ = True
 
 
 # Emailing
-# SendGrid API
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-SENDGRID_SANDBOX_MODE_IN_DEBUG=False
-DEFAULT_FROM_EMAIL = "no-reply@app.kustomr.fr"
+# MAILJET KEYS
+MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PUBLIC')
+MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PRIVATE')
 
 
 # Static files (CSS, JavaScript, Images)
