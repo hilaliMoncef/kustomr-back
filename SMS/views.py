@@ -60,7 +60,7 @@ class AddSMSCampaign(APIView):
                 links = shortener.shorten_urls(['https://app.kustomr.fr/welcome/{}-{}/{}'.format(vendor.pk, slugify(vendor.store_name), customer.token.token)])
                 final_url = (
                     URL + PATH_SEND_SMS +
-                    '?accessToken=js0if6vjzu9KVjbW1kfPJtlQcPXnM27p' +
+                    '?accessToken=' + settings.SMSMODE_API_KEY +
                     '&message=' + urllib.parse.quote_plus((request.data['content'] + '\nMon profil: {}'.format(links[0])).encode('iso-8859-15')) +
                     '&numero=' + customer.phone +
                     '&emetteur=' + slugify(vendor.store_name).replace('_', '').upper()[:11] +
