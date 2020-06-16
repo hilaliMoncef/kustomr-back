@@ -19,7 +19,7 @@ import os
 import json
 
 
-class ListCreateEmailCampaigns(generics.ListAPIView):
+class ListEmailCampaigns(generics.ListAPIView):
     queryset = EmailCampaign.objects.all()
     serializer_class = EmailCampaignSerializer
     permission_classes = [permissions.IsAuthenticated]
