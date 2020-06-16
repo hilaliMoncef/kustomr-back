@@ -76,6 +76,8 @@ class AddEmailCampaign(APIView):
 
         if form.is_valid():
             campaign = form.save(commit=False)
+            campaign.vendor = vendor
+            campaign.save()
             campaign.to.add(*request.data['to'])
 
             if not request.data['isScheduled']:
