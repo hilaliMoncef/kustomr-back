@@ -17,7 +17,7 @@ import json
 logger = get_task_logger(__name__)
 
 @periodic_task(
-    run_every=(crontab(minute=22, hour=13)),
+    run_every=(crontab(minute=25, hour=13)),
     name="daily_email_campaigns",
     ignore_result=True
 )
@@ -71,4 +71,5 @@ def daily_email_campaigns():
             campaign.save()
             logger.info("Sent campaign {}".format(campaign.pk))
         else:
+            print(result.json())
             logger.info("Error in sending campaign to Mailjet")
