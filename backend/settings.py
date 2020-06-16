@@ -167,8 +167,8 @@ USE_TZ = True
 
 # Emailing
 # MAILJET KEYS
-MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PUBLIC')
-MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PRIVATE')
+MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PRIVATE')
+MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PUBLIC')
 
 # SMS
 # SMSMODE KEYS
@@ -176,7 +176,7 @@ SMSMODE_API_KEY = os.environ.get('SMSMODE_API_KEY')
 
 # BITLY
 # API KEY
-BITLY_API_KEY = os.environ.get('SMSMODE_API_KEY')
+BITLY_API_KEY = os.environ.get('BITLY_API_KEY')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
