@@ -17,7 +17,7 @@ import json
 logger = get_task_logger(__name__)
 
 @periodic_task(
-    run_every=(crontab(minute=25, hour=13)),
+    run_every=(crontab(minute=34, hour=13)),
     name="daily_email_campaigns",
     ignore_result=True
 )
