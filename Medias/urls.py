@@ -7,4 +7,5 @@ urlpatterns = [
     path('discounts', views.DiscountUploadView.as_view(), name="upload_discounts"),
     path('trainings', views.DiscountUploadView.as_view(), name="upload_trainings"),
     path('emails', views.EmailUploadView.as_view(), name="upload_emails"),
+    path('socials', views.SocialUploadView.as_view(), name="upload_socials"),
 ]

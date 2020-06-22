@@ -16,6 +16,7 @@ import requests
 import urllib
 import sys
 import os.path
+from datetime import datetime
 
 
 
@@ -53,7 +54,7 @@ class AddSMSCampaign(APIView):
 
             sms_sent = 0
 
-            tokens_pool = ['890e64285cbb2d55b77c16a433feb3755b78de94']
+            tokens_pool = [os.environ.get('BITLY_API_KEY')]
             shortener = Shortener(tokens=tokens_pool, max_cache_size=8192)
 
             for customer in Customer.objects.filter(pk__in=request.data['to']):
@@ -61,6 +62,7 @@ class AddSMSCampaign(APIView):
                 final_url = (
                     URL + PATH_SEND_SMS +
                     '?accessToken=' + settings.SMSMODE_API_KEY +
+                    '&date_envoi=' + datetime.strptime(request.data['send_at'], "%Y-%m-%d %H:%M").strftime('%d%m%Y-%H:%m') +
                     '&message=' + urllib.parse.quote_plus((request.data['content'] + '\nMon profil: {}'.format(links[0])).encode('iso-8859-15')) +
                     '&numero=' + customer.phone +
                     '&emetteur=' + slugify(vendor.store_name).replace('_', '').upper()[:11] +

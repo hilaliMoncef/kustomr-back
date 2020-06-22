@@ -71,7 +71,9 @@ CORS_ORIGIN_WHITELIST = [
     "https://app.kustomr.fr",
     "https://app.kustomr.io",
     "http://localhost:8080",
-    "http://localhost:8081"
+    "http://localhost:8081",
+    "https://localhost:8080",
+    "https://localhost:8081"
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -124,8 +126,8 @@ AUTH_USER_MODEL = 'Users.User'
 
 
 # CELERY STUFF
-BROKER_URL = os.environ['REDIS_URL']
-CELERY_RESULT_BACKEND = os.environ['REDIS_URL']
+BROKER_URL = os.environ.get('REDIS_URL')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

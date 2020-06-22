@@ -5,9 +5,9 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
-from .forms import ArticleMediaUploadForm, VendorMediaUploadForm, DiscountMediaUploadForm, TrainingMediaUploadForm, EmailMediaUploadForm
-from .models import ArticleMedia, VendorMedia, DiscountMedia, TrainingMedia, EmailMedia
-from .serializers import VendorMediaSerializer, DiscountMediaSerializer, ArticleMediaSerializer, TrainingMediaSerializer, EmailMediaSerializer
+from .forms import ArticleMediaUploadForm, VendorMediaUploadForm, DiscountMediaUploadForm, TrainingMediaUploadForm, EmailMediaUploadForm, SocialMediaUploadForm
+from .models import ArticleMedia, VendorMedia, DiscountMedia, TrainingMedia, EmailMedia, SocialMedia
+from .serializers import VendorMediaSerializer, DiscountMediaSerializer, ArticleMediaSerializer, TrainingMediaSerializer, EmailMediaSerializer, SocialMediaSerializer
 
 
 
@@ -76,6 +76,20 @@ class EmailUploadView(APIView):
             if form.is_valid():
                 image = form.save()
                 return Response(EmailMediaSerializer(image).data, status=status.HTTP_201_CREATED)
+            else:
+                print(form.errors)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SocialUploadView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    def post(self, request, format=None):
+        if request.FILES['file']:
+            form = SocialMediaUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                image = form.save()
+                return Response(SocialMediaSerializer(image).data, status=status.HTTP_201_CREATED)
             else:
                 print(form.errors)
                 return Response(status=status.HTTP_400_BAD_REQUEST)

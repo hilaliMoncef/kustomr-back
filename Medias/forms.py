@@ -1,5 +1,5 @@
 from django import forms
-from .models import ArticleMedia, DiscountMedia, VendorMedia, TrainingMedia, EmailMedia
+from .models import ArticleMedia, DiscountMedia, VendorMedia, TrainingMedia, EmailMedia, SocialMedia
 
 
 class ArticleMediaUploadForm(forms.ModelForm):
@@ -29,4 +29,9 @@ class TrainingMediaUploadForm(forms.ModelForm):
 class EmailMediaUploadForm(forms.ModelForm):
     class Meta:
         model = EmailMedia
+        fields = ['file']
+
+class SocialMediaUploadForm(forms.ModelForm):
+    class Meta:
+        model = SocialMedia
         fields = ['file']
