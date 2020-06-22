@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'Training',
     'Email',
     'SMS',
+    'Social',
     'Discount'
 ]
 
