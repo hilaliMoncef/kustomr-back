@@ -40,8 +40,8 @@ class StatisticsByEmailCampaign(APIView):
     def get(self, request, pk, *args, **kwargs):
         campaign = get_object_or_404(EmailCampaign, pk=pk)
 
-        api_key = '46a124dc7da2c21caf65a7fef536400c'
-        api_secret = '0e37a3531511a7936b557dc02b757fe5'
+        api_key = settings.MJ_APIKEY_PUBLIC
+        api_secret = settings.MJ_APIKEY_PRIVATE
         mailjet = Client(auth=(api_key, api_secret), version='v3')
         
         if not campaign.mailjet_id:
